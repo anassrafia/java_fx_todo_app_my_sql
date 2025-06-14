@@ -1,0 +1,14 @@
+compile :
+
+javac --module-path $PATH_TO_FX --add-modules javafx.controls -cp .:mysql-connector-j-9.3.0.jar -d out @sources.txt
+
+
+
+
+Run :
+
+java \
+  --module-path $PATH_TO_FX \
+  --add-modules javafx.controls \
+  -cp out:mysql-connector-j-9.3.0.jar \
+  TodoApp
