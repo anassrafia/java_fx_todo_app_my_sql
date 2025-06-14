@@ -176,8 +176,7 @@ private void loadTasks() {
         Button doneButton = new Button("Fait");
         doneButton.setStyle("-fx-background-color: #34A853; -fx-text-fill: white;");
         doneButton.setOnAction(e -> {
-            taskLabel.setStyle("-fx-text-fill: gray; -fx-strikethrough: true;");
-            doneButton.setDisable(true);
+            loadTasks();
         });
 
         HBox taskBox = new HBox(10, taskLabel, doneButton);
@@ -186,6 +185,12 @@ private void loadTasks() {
         taskBox.setStyle("-fx-background-color: white; -fx-border-color: #ddd; -fx-border-radius: 5; -fx-background-radius: 5;");
         taskList.getChildren().add(taskBox);
     }
+
+
+
+
+
+
 
 
     
@@ -205,11 +210,6 @@ private void loadTasks() {
     public static void main(String[] args) {
         launch(args);
     }
-
-
-
-
-
 
 
 
