@@ -9,11 +9,11 @@ import javafx.stage.Stage;
 
 import java.sql.*;  // for your database stuff
 
-
 import views.LoginScreen;
 import views.SignupScreen;
 import controllers.AuthService;
 import controllers.ConnexionController;
+import dao.UserDAO;
 
 
 
@@ -94,22 +94,12 @@ private boolean authenticateUser(String username, String password) {
 
 
 
-
-    public boolean registerUser(String username, String password) {
-        try {
-            PreparedStatement stmt = connection.prepareStatement("INSERT INTO users (username, password) VALUES (?, ?)");
-            stmt.setString(1, username);
-            stmt.setString(2, password);
-            stmt.executeUpdate();
-            return true;
-        } catch (SQLException e) {
-            return false;
-        }
-    }
+public boolean registerUser(String username, String password) {
+    UserDAO userDAO = new UserDAO(connection);
+    return userDAO.registerUser(username, password);
+}
 
 
-
-    
 
 
 

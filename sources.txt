@@ -1,3 +1,4 @@
+src/main/java/dao/UserDAO.java
 src/main/java/models/UserModel.java
 src/main/java/TodoApp.java
 src/main/java/controllers/ConnexionController.java
