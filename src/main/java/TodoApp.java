@@ -9,10 +9,13 @@ import javafx.stage.Stage;
 
 import java.sql.*;  // for your database stuff
 
+
 import views.LoginScreen;
 import views.SignupScreen;
+import views.TodoScreen;
 import controllers.AuthService;
 import controllers.ConnexionController;
+import dao.TaskDAO;
 import dao.UserDAO;
 
 
@@ -92,8 +95,6 @@ private boolean authenticateUser(String username, String password) {
 
 
 
-
-
 public boolean registerUser(String username, String password) {
     UserDAO userDAO = new UserDAO(connection);
     return userDAO.registerUser(username, password);
@@ -104,68 +105,57 @@ public boolean registerUser(String username, String password) {
 
 
 
-    private void showTodoScreen(String username) {
-        ImageView logoLeft = new ImageView(new Image("https://i.ibb.co/3Ymh4sKG/supmti-logo-todo.png"));
-        logoLeft.setFitHeight(50);
-        logoLeft.setPreserveRatio(true);
 
-        ImageView logoutLogo = new ImageView(new Image("https://i.ibb.co/qYLty3g1/8345293.png"));
-        logoutLogo.setFitHeight(30);
-        logoutLogo.setPreserveRatio(true);
-        logoutLogo.setCursor(javafx.scene.Cursor.HAND);
-        logoutLogo.setOnMouseClicked(e -> {
-            loggedInUserId = -1;
-            showLoginScreen();
-        });
 
-        HBox header = new HBox(logoLeft, new Region(), logoutLogo);
-        HBox.setHgrow(header.getChildren().get(1), Priority.ALWAYS);
-        header.setPadding(new Insets(10));
-        header.setAlignment(Pos.CENTER);
-        header.setStyle("-fx-background-color: #f2f2f2;");
+private void showTodoScreen(String username) {
+    TodoScreen todoScreen = new TodoScreen(primaryStage, username);
 
-        TextField taskInput = new TextField();
-        taskInput.setPromptText("Ajouter une tâche...");
-        Button addButton = new Button("Ajouter");
+    // link taskList from the UI
+    this.taskList = todoScreen.getTaskList();
 
-        HBox inputBox = new HBox(10, taskInput, addButton);
-        inputBox.setAlignment(Pos.CENTER);
-        inputBox.setPadding(new Insets(10));
-
-        taskList = new VBox(10);
-        taskList.setPadding(new Insets(10));
-        taskList.setAlignment(Pos.TOP_CENTER);
-
-        addButton.setOnAction(e -> {
-            String task = taskInput.getText().trim();
-            if (!task.isEmpty()) {
-                addTaskToDatabase(task);
-                addTaskToUI(task);
-                taskInput.clear();
-            }
-        });
-
-        loadTasks();
-
-        VBox root = new VBox(header, inputBox, taskList);
-        Scene scene = new Scene(root, 500, 600);
-        primaryStage.setScene(scene);
-        primaryStage.setTitle("Bienvenue, " + username);
-    }
-
-    private void loadTasks() {
-        taskList.getChildren().clear();
-        try {
-            PreparedStatement stmt = connection.prepareStatement("SELECT task FROM todo WHERE user_id=?");
-            stmt.setInt(1, loggedInUserId);
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                addTaskToUI(rs.getString("task"));
-            }
-        } catch (SQLException e) {
-            showError("Erreur de chargement des tâches: " + e.getMessage());
+    // handle Add button action
+    todoScreen.getAddButton().setOnAction(e -> {
+        String task = todoScreen.getTaskInput().getText().trim();
+        if (!task.isEmpty()) {
+            addTaskToDatabase(task);
+            addTaskToUI(task);
+            todoScreen.getTaskInput().clear();
         }
-    }
+    });
+
+    // handle logout
+    todoScreen.getHeader().getChildren().get(2).setOnMouseClicked(e -> {
+        loggedInUserId = -1;
+        showLoginScreen();
+    });
+
+    // Load existing tasks
+    loadTasks();
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+private void loadTasks() {
+    TaskDAO taskDAO = new TaskDAO(connection);
+    taskDAO.loadTasksForUser(loggedInUserId, taskList);
+}
+
+
+
+
+
 
     private void addTaskToDatabase(String task) {
         try {
@@ -177,6 +167,9 @@ public boolean registerUser(String username, String password) {
             showError("Erreur d'ajout de tâche: " + e.getMessage());
         }
     }
+
+
+
 
     private void addTaskToUI(String taskText) {
         Label taskLabel = new Label(taskText);
@@ -193,6 +186,9 @@ public boolean registerUser(String username, String password) {
         taskBox.setStyle("-fx-background-color: white; -fx-border-color: #ddd; -fx-border-radius: 5; -fx-background-radius: 5;");
         taskList.getChildren().add(taskBox);
     }
+
+
+    
 
     public void showError(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR, message, ButtonType.OK);

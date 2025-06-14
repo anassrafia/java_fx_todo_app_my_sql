@@ -1,7 +1,9 @@
 src/main/java/dao/UserDAO.java
+src/main/java/dao/TaskDAO.java
 src/main/java/models/UserModel.java
 src/main/java/TodoApp.java
 src/main/java/controllers/ConnexionController.java
 src/main/java/controllers/AuthService.java
+src/main/java/views/TodoScreen.java
 src/main/java/views/LoginScreen.java
 src/main/java/views/SignupScreen.java
